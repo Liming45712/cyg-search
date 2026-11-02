@@ -4,16 +4,22 @@
 
 本工具用于查看和筛选角色，购买时通过「在官网查看」前往畅易阁。不提供账号登录、下单或交易功能，也不是官方客户端。
 
+## 使用说明
+
+本项目**仅供学习、技术研究与交流使用**，不是畅易阁或游戏运营方的官方产品，与相关平台无隶属或合作关系。请遵守相关法律法规及平台规则，合理控制请求频率，不得用于违法违规用途、侵犯他人权益或干扰平台正常运行。
+
+游戏数据、商标等权益归各自权利方所有。本地缓存可能过期，项目不保证数据实时性或完整性；价格、角色状态与交易规则均以官网为准，购买及交易请通过官方平台完成。
+
 ## 功能概览
 
 - **区服选择**：按大区、小区两列联动选择，支持搜索区服及合服名称，记住上次选择。
 - **本地组合筛选**：支持角色名称、价格区间、职业多选、在售 / 公示状态、角色属性最低值，以及至尊 / 神佑装备类型。
-- **紧凑角色列表**：每个角色分三行展示，包含等级、价格、职业、状态，以及生命、攻击、精神、灵巧、VIP、装备评分、铭石等级、星石等级。
+- **卡片 / 表格切换**：卡片每行显示 2–3 个角色；紧凑表格支持列标题排序和自适应列宽。两种视图均展示主要属性，表格中的 VIP 以职业旁的徽标突出显示。
 - **排序与分页**：通过列表上方选项选择排序字段及升降序，每页可显示 50、100 或 200 个角色。
 - **详情侧栏**：查看解析到的角色属性、至尊 / 神佑装备计数，以及列表检查和详情获取时间。
 - **本地缓存**：获取过的数据可在重启后继续查看和筛选；支持暂停、失败重试和主动刷新详情。
 
-当前版本为 **0.3.1**。已配置 macOS `.app` 和 Windows NSIS `.exe` 安装包；macOS 最低系统版本配置为 11.0。Windows 打包配置尚未在 Windows 环境实际构建验证，暂未配置 Linux 安装包。
+当前版本为 **0.3.12**。已配置 GitHub Actions 自动打包 macOS 通用版 `.app.zip`（Apple Silicon / Intel）和 Windows x64 NSIS `.exe` 安装包；macOS 最低系统版本配置为 11.0。暂未配置 Linux 安装包。
 
 ## 开始使用
 
@@ -124,6 +130,24 @@ src-tauri/target/release/bundle/macos/畅易阁角色筛选.app
 ```
 
 `bundle:mac` 的本地 ad-hoc 签名不等同于 Apple Developer ID 签名或公证。当前仓库没有配置正式分发签名流程。
+
+### GitHub Actions 自动打包
+
+工作流：[Build desktop apps](https://github.com/Liming45712/cyg-search/actions/workflows/build.yml)，配置位于 [`.github/workflows/build.yml`](.github/workflows/build.yml)。
+
+- 推送到 `main`、推送 `v*` 标签或提交 Pull Request 时自动运行。
+- 也可进入上述工作流，点击 **Run workflow** 手动打包。
+- 每个平台先运行前端测试、类型检查和 Rust 本地测试，再生成 release 产物；实时官网抓取测试不在 CI 中执行。
+- 运行成功后，在该次运行页面的 **Artifacts** 中下载，产物保留 30 天；下载需要登录 GitHub。此流程不自动创建 GitHub Release。
+
+| Artifact | 内容 |
+| --- | --- |
+| `cyg-search-macos-universal` | 通用版 `.app.zip`，解压后得到 `.app`，兼容 Apple Silicon 和 Intel |
+| `cyg-search-windows-x64` | Windows x64 简体中文 NSIS `.exe` 安装包 |
+
+CI 使用 Node.js 22 和 Rust stable，通过 `npm ci` 与 Cargo 的 `--locked` 使用锁定依赖。macOS 在一个任务中构建 ARM64、x86_64 并合并为通用版，压缩前验证两种架构和 ad-hoc 签名。配置参考 [Tauri 的 GitHub Actions 指引](https://v2.tauri.app/distribute/pipelines/github/)。
+
+无需配置签名 Secrets 即可运行。macOS 产物仅使用 ad-hoc 签名，未经过 Apple Developer ID 签名或公证；Windows 安装包未配置代码签名，首次打开时系统可能显示安全或未知发布者提示。
 
 ### Windows 打包
 
