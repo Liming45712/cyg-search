@@ -16,13 +16,14 @@ import {
   Close,
   Download,
   Filter,
-  Link,
   Plus,
   Refresh,
   Search,
   VideoPause,
 } from "@element-plus/icons-vue";
 import RangeInput from "./RangeInput.vue";
+import OfficialViewer from "./OfficialViewer.vue";
+import { toggleComparison } from "./comparison";
 import {
   applyFilters,
   defaults,
@@ -74,8 +75,9 @@ const progress = shallowRef<Progress>({
 const sections = ref(["basic", "equipment", "attributes"]);
 const newAttribute = ref("");
 const selectedCode = ref<string | null>(null);
-const drawerOpen = ref(false);
-const detailTab = ref("attributes");
+const viewerOpen = ref(false);
+const viewerRoles = shallowRef<Role[]>([]);
+const compareCodes = ref<string[]>([]);
 const page = ref(1);
 const pageSize = ref(50);
 const table = ref<TableInstance>();
@@ -161,8 +163,11 @@ const pageRows = computed(() =>
     page.value * pageSize.value,
   ),
 );
-const selected = computed(() =>
-  roles.value.find((r) => r.code === selectedCode.value),
+const compareRoles = computed(() =>
+  compareCodes.value.flatMap((code) => {
+    const role = roles.value.find((r) => r.code === code);
+    return role ? [role] : [];
+  }),
 );
 const attributes = computed(() =>
   [
@@ -252,9 +257,22 @@ function addAttribute() {
 }
 function selectRole(role: Role) {
   selectedCode.value = role.code;
-  detailTab.value = "attributes";
-  drawerOpen.value = true;
+  viewerRoles.value = [role];
+  viewerOpen.value = true;
 }
+function toggleCompare(code: string) {
+  compareCodes.value = toggleComparison(compareCodes.value, code);
+}
+function compareSelected() {
+  if (compareRoles.value.length !== 2) return;
+  viewerRoles.value = [...compareRoles.value];
+  viewerOpen.value = true;
+}
+watch(roles, (value) => {
+  compareCodes.value = compareCodes.value.filter((code) =>
+    value.some((role) => role.code === code),
+  );
+});
 function tableSort({
   prop,
   order,
@@ -367,19 +385,11 @@ async function cancel() {
     showNotice(`暂停失败：${String(e)}`);
   }
 }
-async function openRole() {
-  if (selected.value)
-    try {
-      await invoke("open_role", { code: selected.value.code });
-    } catch (e) {
-      showNotice(`打开官网失败：${String(e)}`);
-    }
-}
 watch(
   () => filters.server,
   (value) => {
     localStorage.setItem("cyg-server", value);
-    drawerOpen.value = false;
+    viewerOpen.value = false;
     selectedCode.value = null;
   },
 );
@@ -722,6 +732,25 @@ onBeforeUnmount(() => {
             @sort-change="tableSort"
             @row-click="selectRole"
           >
+            <el-table-column
+              label="对比"
+              width="52"
+              align="center"
+              fixed="left"
+            >
+              <template #default="{ row }: { row: Role }">
+                <el-checkbox
+                  :model-value="compareCodes.includes(row.code)"
+                  :disabled="
+                    compareCodes.length === 2 &&
+                    !compareCodes.includes(row.code)
+                  "
+                  :aria-label="`对比${row.name}`"
+                  @click.stop
+                  @change="toggleCompare(row.code)"
+                />
+              </template>
+            </el-table-column>
             <el-table-column label="角色 / 职业" min-width="160" fixed="left">
               <template #default="{ row }: { row: Role }">
                 <el-button
@@ -848,6 +877,18 @@ onBeforeUnmount(() => {
                             : "状态未知"
                       }}
                     </el-tag>
+                    <el-checkbox
+                      class="card-compare"
+                      :model-value="compareCodes.includes(row.code)"
+                      :disabled="
+                        compareCodes.length === 2 &&
+                        !compareCodes.includes(row.code)
+                      "
+                      :aria-label="`对比${row.name}`"
+                      @click.stop
+                      @change="toggleCompare(row.code)"
+                      >对比</el-checkbox
+                    >
                     <el-button link type="primary" @click.stop="selectRole(row)"
                       >详情</el-button
                     >
@@ -912,6 +953,37 @@ onBeforeUnmount(() => {
               ></el-empty
             >
           </el-scrollbar>
+          <div
+            v-if="compareRoles.length"
+            class="compare-bar"
+            aria-label="已选对比角色"
+          >
+            <span>角色对比 {{ compareRoles.length }}/2</span>
+            <div class="compare-names">
+              <el-tag
+                v-for="role in compareRoles"
+                :key="role.code"
+                effect="plain"
+                :title="`${role.name} · ${role.job} · ${role.server_id}`"
+                ><span>{{ role.name }}</span
+                ><el-button
+                  link
+                  :icon="Close"
+                  :aria-label="`移除对比${role.name}`"
+                  @click="toggleCompare(role.code)"
+              /></el-tag>
+              <span v-if="compareRoles.length === 1" class="compare-hint"
+                >再选择一个角色</span
+              >
+            </div>
+            <el-button link @click="compareCodes = []">清空</el-button>
+            <el-button
+              type="primary"
+              :disabled="compareRoles.length !== 2"
+              @click="compareSelected"
+              >开始对比</el-button
+            >
+          </div>
           <div class="table-footer">
             <div class="cache-summary">
               <span
@@ -969,105 +1041,6 @@ onBeforeUnmount(() => {
         >{{ areaSource }} · 价格及交易状态以官网为准</span
       >
     </footer>
-    <el-drawer
-      v-model="drawerOpen"
-      title="角色详情"
-      :size="440"
-      append-to-body
-      class="role-drawer"
-    >
-      <template v-if="selected"
-        ><div class="drawer-role">
-          <el-tag
-            :type="selected.status === 1 ? 'warning' : 'success'"
-            size="small"
-            >{{
-              selected.status === 1
-                ? "公示中"
-                : selected.status === 2
-                  ? "在售"
-                  : "状态未知"
-            }}</el-tag
-          >
-          <h2>{{ selected.name }}</h2>
-          <p>{{ selected.title || selected.job }}</p>
-          <p class="drawer-server">{{ server?.label }}</p>
-          <strong class="drawer-price">¥ {{ fmt(selected.price) }}</strong
-          ><el-button
-            id="open-role"
-            type="primary"
-            :icon="Link"
-            @click="openRole"
-            >在官网查看</el-button
-          >
-        </div>
-        <el-alert
-          v-if="selected.detail_error"
-          :title="
-            selected.detail
-              ? '详情更新失败，以下保留上次成功数据'
-              : '详情获取失败'
-          "
-          :description="selected.detail_error"
-          type="warning"
-          show-icon
-          :closable="false"
-        />
-        <el-descriptions :column="1" size="small" class="time-descriptions"
-          ><el-descriptions-item label="列表检查">{{
-            time(selected.checked_at)
-          }}</el-descriptions-item
-          ><el-descriptions-item label="详情获取">{{
-            time(selected.detail_at)
-          }}</el-descriptions-item
-          ><el-descriptions-item label="上架时间">{{
-            selected.listed_at || "未知"
-          }}</el-descriptions-item
-          ><el-descriptions-item label="预计下架">{{
-            selected.offline_at || "未知"
-          }}</el-descriptions-item></el-descriptions
-        >
-        <el-tabs v-model="detailTab"
-          ><el-tab-pane label="角色属性" name="attributes"
-            ><el-descriptions
-              v-if="selected.detail"
-              :column="1"
-              border
-              size="small"
-              ><el-descriptions-item
-                v-for="(attr, key) in selected.detail.attrs"
-                :key="key"
-                :label="String(key)"
-                >{{ attr.raw }}</el-descriptions-item
-              ></el-descriptions
-            ><el-empty
-              v-else
-              :image-size="64"
-              description="尚未获取角色详情" /></el-tab-pane
-          ><el-tab-pane label="装备计数" name="equipment"
-            ><el-descriptions
-              v-if="Object.keys(selected.detail?.equipment ?? {}).length"
-              :column="1"
-              border
-              ><el-descriptions-item
-                v-for="(count, tag) in selected.detail?.equipment"
-                :key="tag"
-                :label="String(tag)"
-                >{{ count }} 件</el-descriptions-item
-              ></el-descriptions
-            ><el-empty
-              v-else
-              :image-size="64"
-              :description="
-                selected.detail ? '未检出至尊 / 神佑装备' : '尚未获取详情'
-              " /></el-tab-pane
-        ></el-tabs> </template
-      ><el-empty v-else description="该角色已不在本地列表中" />
-      <template #footer
-        ><p class="drawer-disclaimer">
-          价格、在售状态与交易条件请在官网核对。
-        </p></template
-      >
-    </el-drawer>
+    <OfficialViewer v-model="viewerOpen" :roles="viewerRoles" />
   </div>
 </template>

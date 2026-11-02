@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "畅易阁角色筛选",
-  "version": "0.3.12",
+  "version": "0.4.0",
   "identifier": "com.local.cygfinder",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -21,7 +21,7 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; connect-src 'self' ipc: http://ipc.localhost; style-src 'self' 'unsafe-inline'; img-src 'self' data:; script-src 'self'"
+      "csp": "default-src 'self'; connect-src 'self' ipc: http://ipc.localhost; style-src 'self' 'unsafe-inline'; img-src 'self' data:; script-src 'self'; frame-src 'self' http://cyg.changyou.com https://cyg.changyou.com"
     }
   },
   "bundle": {
@@ -35,7 +35,8 @@
     ],
     "category": "Utility",
     "macOS": {
-      "minimumSystemVersion": "11.0"
+      "minimumSystemVersion": "11.0",
+      "infoPlist": "Info.plist"
     }
   }
 }
