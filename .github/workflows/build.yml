@@ -155,6 +155,8 @@ jobs:
           test -s "$mac_app"
           test -s "$windows_app"
           test -s "$windows_notes"
-          gh release create "$tag" "$mac_app" "$windows_app" "$windows_notes" \
+          cp "$windows_app" cyg-search-windows-x64.exe
+          cp "$windows_notes" windows-portable.txt
+          gh release create "$tag" "$mac_app" cyg-search-windows-x64.exe windows-portable.txt \
             --target "$GITHUB_SHA" --title "$tag" --generate-notes --draft
           gh release edit "$tag" --draft=false --latest
