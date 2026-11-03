@@ -8,7 +8,7 @@
     "build": "vue-tsc --noEmit && vite build",
     "test": "tsx --test src/*.test.ts",
     "tauri": "tauri",
-    "bundle:mac": "tauri build --debug && codesign --force --deep --sign - src-tauri/target/debug/bundle/macos/畅易阁角色筛选.app",
+    "bundle:mac": "tauri build --debug && codesign --force --deep --sign - src-tauri/target/debug/bundle/macos/畅易阁角色筛选.app && mkdir -p outputs && ditto src-tauri/target/debug/bundle/macos/畅易阁角色筛选.app outputs/畅易阁角色筛选.app",
     "bundle:windows": "tauri build --bundles nsis"
   },
   "dependencies": {

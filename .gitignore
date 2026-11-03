@@ -7,3 +7,4 @@ src-tauri/target/
 *.db-wal
 src-tauri/gen/schemas/
 交付/
+outputs/

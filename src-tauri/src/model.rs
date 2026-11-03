@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Attr {
     pub raw: String,
     pub num: Option<f64>,
@@ -15,6 +15,10 @@ pub struct Detail {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Role {
+    #[serde(default = "role_type")]
+    pub goods_type: u8,
+    #[serde(default)]
+    pub list_attrs: BTreeMap<String, Attr>,
     pub code: String,
     pub name: String,
     pub title: String,
@@ -24,6 +28,8 @@ pub struct Role {
     pub status: u64,
     pub listed_at: String,
     pub offline_at: String,
+    #[serde(default)]
+    pub listing_updated_at: String,
     #[serde(default)]
     pub detail: Option<Detail>,
     #[serde(default)]
@@ -36,11 +42,35 @@ pub struct Role {
     pub needs_refresh: bool,
 }
 
+impl Role {
+    pub fn listing_changed(&self, previous: &Self) -> bool {
+        self.goods_type != previous.goods_type
+            || self.server_id != previous.server_id
+            || self.name != previous.name
+            || self.title != previous.title
+            || self.job != previous.job
+            || self.price != previous.price
+            || self.status != previous.status
+            || self.listed_at != previous.listed_at
+            || self.offline_at != previous.offline_at
+            // Old caches lack list attributes; learn their baseline before comparing changes.
+            || (!previous.list_attrs.is_empty() && self.list_attrs != previous.list_attrs)
+            // Old caches have no official timestamp; compare their existing fields first.
+            || (!self.listing_updated_at.is_empty()
+                && !previous.listing_updated_at.is_empty()
+                && self.listing_updated_at != previous.listing_updated_at)
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Server {
     #[serde(rename = "serverId")]
     pub id: String,
     pub name: String,
+}
+
+fn role_type() -> u8 {
+    1
 }
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Area {

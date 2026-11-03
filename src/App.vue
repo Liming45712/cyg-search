@@ -23,7 +23,10 @@ import {
 } from "@element-plus/icons-vue";
 import RangeInput from "./RangeInput.vue";
 import OfficialViewer from "./OfficialViewer.vue";
+import SpiritCalculator from "./SpiritCalculator.vue";
+import SpiritMarket from "./SpiritMarket.vue";
 import { toggleComparison } from "./comparison";
+import { useScrollRows } from "./scroll-rows";
 import {
   applyFilters,
   defaults,
@@ -35,7 +38,7 @@ import {
   type Role,
 } from "./filter";
 import { serverOptions } from "./servers";
-import type { CascaderValue, TableInstance } from "element-plus";
+import { ElMessageBox, type CascaderValue, type CheckboxValueType, type TableInstance } from "element-plus";
 
 interface Snapshot {
   roles: Role[];
@@ -51,10 +54,14 @@ interface Summary {
   cancelled: boolean;
   fetched: number;
   failed: number;
+  last_error: string | null;
   removed: number;
 }
 const desktop = isTauri();
-const roles = shallowRef<Role[]>([]);
+const activeTab = ref('roles');
+const goods = shallowRef<Role[]>([]);
+const roles = computed(() => goods.value.filter(item => (item.goods_type ?? 1) === 1));
+const spirits = computed(() => goods.value.filter(item => item.goods_type === 5));
 const areas = shallowRef<Area[]>([]);
 const filters = reactive(defaults(localStorage.getItem("cyg-server") || "104"));
 const busy = ref(false);
@@ -63,6 +70,9 @@ const force = ref(false);
 const initializing = ref(true);
 const areasLoading = ref(false);
 const areasError = ref("");
+const areasReady = ref(false);
+const noticeText = ref<HTMLTextAreaElement>();
+const copyStatus = ref("");
 const areaSource = ref("默认区服");
 const notice = ref("");
 const noticeType = ref<"info" | "error" | "warning">("info");
@@ -78,8 +88,6 @@ const selectedCode = ref<string | null>(null);
 const viewerOpen = ref(false);
 const viewerRoles = shallowRef<Role[]>([]);
 const compareCodes = ref<string[]>([]);
-const page = ref(1);
-const pageSize = ref(50);
 const table = ref<TableInstance>();
 const viewMode = ref(
   localStorage.getItem("cyg-view") === "list" ? "list" : "cards",
@@ -128,7 +136,10 @@ const listFields = [
   "星石总等级",
 ];
 const tableFields = listFields.filter((key) => key !== "VIP等级");
-const options = computed(() => serverOptions(areas.value, roles.value));
+const canSync = computed(() => areasReady.value && areas.value.some(
+  area => area.server.some(server => server.serverId === filters.server),
+));
+const options = computed(() => serverOptions(areas.value, goods.value));
 const regionOptions = computed(() =>
   [...new Set(options.value.map((s) => s.area))].map((area) => ({
     value: area,
@@ -157,12 +168,7 @@ const checkedAt = computed(() =>
 );
 const error = computed(() => rangeError(filters));
 const shown = computed(() => applyFilters(roles.value, filters));
-const pageRows = computed(() =>
-  shown.value.slice(
-    (page.value - 1) * pageSize.value,
-    page.value * pageSize.value,
-  ),
-);
+const { visibleRows, hasMore, loading: loadingRows, loadMore, onScroll, resetRows } = useScrollRows(shown);
 const compareRoles = computed(() =>
   compareCodes.value.flatMap((code) => {
     const role = roles.value.find((r) => r.code === code);
@@ -230,8 +236,19 @@ let timer: ReturnType<typeof setInterval> | undefined;
 let loadingSnapshot = false;
 let unlisten: UnlistenFn | undefined;
 function showNotice(message: string, type: typeof noticeType.value = "error") {
+  copyStatus.value = "";
   notice.value = message;
   noticeType.value = type;
+}
+async function copyNotice() {
+  try {
+    await navigator.clipboard.writeText(notice.value);
+    copyStatus.value = "已复制";
+  } catch {
+    noticeText.value?.focus();
+    noticeText.value?.select();
+    copyStatus.value = "自动复制失败，请按 Ctrl+C（Mac：⌘C）复制";
+  }
 }
 function reset() {
   Object.assign(filters, defaults(filters.server));
@@ -297,7 +314,7 @@ async function refreshSnapshot() {
   loadingSnapshot = true;
   try {
     const value = await invoke<Snapshot>("snapshot");
-    roles.value = value.roles;
+    goods.value = value.roles;
     if (value.areas.length) {
       areas.value = value.areas;
       if (areaSource.value !== "官网区服") areaSource.value = "本地区服缓存";
@@ -313,22 +330,54 @@ function ensureServer() {
 async function refreshAreas() {
   if (areasLoading.value || busy.value || !desktop) return;
   areasLoading.value = true;
+  areasReady.value = false;
+  const previousError = areasError.value;
   areasError.value = "";
   try {
     areas.value = await invoke<Area[]>("refresh_areas");
+    if (!areas.value.some(area => area.server.length)) throw new Error("官网返回的区服列表为空");
+    areasReady.value = true;
     areaSource.value = "官网区服";
     ensureServer();
+    if (notice.value === previousError) notice.value = "";
   } catch (e) {
     if (areas.value.length) areaSource.value = "本地区服缓存";
-    areasError.value = `区服刷新失败，当前使用${areaSource.value}。${String(e)}`;
+    areasError.value = `区服获取失败，已禁止拉取数据。请刷新区服重试。原因：${String(e)}`;
+    showNotice(areasError.value);
   } finally {
     areasLoading.value = false;
+  }
+}
+async function changeFullRefresh(value: CheckboxValueType) {
+  if (!value) {
+    force.value = false;
+    return;
+  }
+  try {
+    await ElMessageBox.confirm(
+      "全量刷新会重新请求当前区服、当前分类的全部商品详情，增加访问量。频繁或连续拉取可能触发平台监控、风控或限流，导致访问受限。建议优先使用默认增量更新，仅在确需核对数据时使用全量刷新。",
+      "全量刷新风险提示",
+      {
+        type: "warning",
+        confirmButtonText: "了解风险，启用全量刷新",
+        cancelButtonText: "取消",
+        closeOnClickModal: false,
+      },
+    );
+    force.value = true;
+  } catch {
+    force.value = false;
   }
 }
 async function sync() {
   if (busy.value || areasLoading.value || initializing.value || !desktop)
     return;
+  if (!canSync.value) {
+    showNotice(areasError.value || "请先成功获取官网区服，并选择有效区服后再拉取数据。");
+    return;
+  }
   busy.value = true;
+  const goodsType = activeTab.value === 'market' ? 5 : 1;
   stopping.value = false;
   notice.value = "";
   progress.value = {
@@ -346,6 +395,7 @@ async function sync() {
     const operation = invoke<Summary>("crawl", {
       serverId: filters.server,
       force: force.value,
+      goodsType,
     });
     force.value = false;
     const result = await operation;
@@ -356,7 +406,7 @@ async function sync() {
       };
     if (result.failed)
       showNotice(
-        `${result.failed} 个详情获取失败，再次拉取会重试；已缓存的详情已保留。`,
+        `${result.failed} 个详情获取失败，再次拉取会重试；已缓存的详情已保留。${result.last_error ? `最近错误：${result.last_error}` : ""}`,
         "warning",
       );
   } catch (e) {
@@ -396,13 +446,10 @@ watch(
 watch(
   filters,
   () => {
-    page.value = 1;
+    resetRows();
   },
   { deep: true },
 );
-watch(pageSize, () => {
-  page.value = 1;
-});
 watch(sortValue, () => {
   if (["price", ...tableFields].includes(filters.sort))
     table.value?.sort(filters.sort, filters.desc ? "descending" : "ascending");
@@ -411,15 +458,6 @@ watch(sortValue, () => {
 watch(viewMode, (value) => {
   localStorage.setItem("cyg-view", value);
 });
-watch(
-  () => shown.value.length,
-  (length) => {
-    page.value = Math.min(
-      page.value,
-      Math.max(1, Math.ceil(length / pageSize.value)),
-    );
-  },
-);
 onMounted(async () => {
   if (!desktop) {
     initializing.value = false;
@@ -429,6 +467,8 @@ onMounted(async () => {
   try {
     unlisten = await listen<Progress>("crawl-progress", (event) => {
       progress.value = event.payload;
+      if (event.payload.stage === "error" || event.payload.stage === "detail-error")
+        showNotice(event.payload.message, event.payload.stage === "detail-error" ? "warning" : "error");
     });
     await refreshSnapshot();
     ensureServer();
@@ -457,7 +497,7 @@ onBeforeUnmount(() => {
           <p>新水浒Q传</p>
         </div>
       </div>
-      <div class="source-bar">
+      <div v-show="activeTab !== 'spirit'" class="source-bar">
         <div class="server-control">
           <el-form-item label="查询区服" class="server-field">
             <el-cascader
@@ -483,7 +523,7 @@ onBeforeUnmount(() => {
           /></el-tooltip>
         </div>
         <div class="source-divider" />
-        <el-checkbox v-model="force" :disabled="busy">重新获取详情</el-checkbox>
+        <el-checkbox v-model="force" :disabled="busy" @change="changeFullRefresh">全量刷新详情</el-checkbox>
         <el-button
           v-if="busy"
           id="cancel"
@@ -497,21 +537,15 @@ onBeforeUnmount(() => {
           id="sync"
           type="primary"
           :icon="Download"
-          :disabled="!desktop || initializing || areasLoading"
+          :disabled="!desktop || initializing || areasLoading || !canSync"
+          :title="!canSync ? '请先成功获取官网区服并选择区服' : '拉取当前区服数据'"
           @click="sync"
           >拉取 / 更新</el-button
         >
       </div>
     </header>
-    <div v-if="areasError" class="area-error">
-      <el-alert :title="areasError" type="warning" show-icon :closable="false"
-        ><template #default
-          ><el-button link type="primary" :disabled="busy" @click="refreshAreas"
-            >重试获取区服</el-button
-          ></template
-        ></el-alert
-      >
-    </div>
+    <el-tabs v-model="activeTab" class="application-tabs">
+      <el-tab-pane label="角色筛选" name="roles">
     <main class="workspace">
       <aside class="filter-panel" aria-label="角色筛选条件">
         <div class="panel-title">
@@ -634,7 +668,7 @@ onBeforeUnmount(() => {
           </p>
         </el-scrollbar>
       </aside>
-      <section class="results" aria-label="筛选结果">
+      <section class="results" aria-label="筛选结果" @scroll.capture.passive="onScroll">
         <div class="results-header">
           <div class="results-heading">
             <div class="results-title">
@@ -655,13 +689,6 @@ onBeforeUnmount(() => {
             <el-radio-button value="list">表格</el-radio-button>
           </el-radio-group>
         </div>
-        <el-alert
-          v-if="notice"
-          :title="notice"
-          :type="noticeType"
-          show-icon
-          @close="notice = ''"
-        />
         <el-alert
           v-if="error"
           :title="error"
@@ -713,7 +740,7 @@ onBeforeUnmount(() => {
           <el-table
             v-if="viewMode === 'list'"
             ref="table"
-            :data="pageRows"
+            :data="visibleRows"
             row-key="code"
             height="100%"
             stripe
@@ -836,8 +863,8 @@ onBeforeUnmount(() => {
             </template>
           </el-table>
           <el-scrollbar v-else class="role-scroll">
-            <div v-if="pageRows.length" class="role-grid">
-              <template v-for="row in pageRows" :key="row.code">
+            <div v-if="visibleRows.length" class="role-grid">
+              <template v-for="row in visibleRows" :key="row.code">
                 <article
                   class="role-summary"
                   :class="{ 'is-selected': selectedCode === row.code }"
@@ -1004,20 +1031,24 @@ onBeforeUnmount(() => {
                 ></el-tooltip
               >
             </div>
-            <el-pagination
-              v-model:current-page="page"
-              v-model:page-size="pageSize"
-              :total="shown.length"
-              :page-sizes="[50, 100, 200]"
-              layout="total, sizes, prev, pager, next"
-              small
-              background
-            />
+            <div class="list-load-status">
+              <span role="status">已显示 {{ visibleRows.length }} / {{ shown.length }} 条</span>
+              <el-button v-if="hasMore" size="small" :loading="loadingRows" @click="loadMore">加载更多</el-button>
+              <span v-else>{{ shown.length ? '已全部显示' : '暂无结果' }}</span>
+            </div>
           </div>
         </div>
       </section>
     </main>
-    <footer class="status-bar">
+      </el-tab-pane>
+      <el-tab-pane label="星灵选购" name="market">
+        <SpiritMarket :items="spirits" :server="filters.server" :busy="busy" />
+      </el-tab-pane>
+      <el-tab-pane label="星灵 / 灵宝计算器" name="spirit">
+        <SpiritCalculator />
+      </el-tab-pane>
+    </el-tabs>
+    <footer v-show="activeTab !== 'spirit'" class="status-bar">
       <div class="task-state">
         <span class="status-dot" :class="{ running: busy }" /><span
           role="status"
@@ -1041,6 +1072,18 @@ onBeforeUnmount(() => {
         >{{ areaSource }} · 价格及交易状态以官网为准</span
       >
     </footer>
+    <Teleport to="body">
+      <el-alert v-if="notice" class="error-notice" :type="noticeType" show-icon
+        :title="noticeType === 'error' ? '操作失败' : '提示'" @close="notice = ''">
+        <textarea ref="noticeText" class="notice-text" :value="notice" readonly aria-label="完整提示及错误原因" />
+        <div class="notice-actions">
+          <el-button size="small" @click="copyNotice">复制提示</el-button>
+          <el-button v-if="areasError && !areasReady" size="small" :loading="areasLoading"
+            :disabled="busy || initializing" @click="refreshAreas">重试获取区服</el-button>
+          <span role="status">{{ copyStatus }}</span>
+        </div>
+      </el-alert>
+    </Teleport>
     <OfficialViewer v-model="viewerOpen" :roles="viewerRoles" />
   </div>
 </template>

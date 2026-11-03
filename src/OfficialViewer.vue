@@ -6,7 +6,7 @@ import { officialRoleUrl } from "./comparison";
 import type { Role } from "./filter";
 
 const open = defineModel<boolean>({ required: true });
-const props = defineProps<{ roles: Role[] }>();
+const props = withDefaults(defineProps<{ roles: Role[]; kind?: string }>(), { kind: '角色' });
 const desktop = isTauri();
 const zoom = ref(100);
 const loaded = ref<Record<string, boolean>>({});
@@ -44,11 +44,11 @@ async function openExternal(code: string) {
     fullscreen
     destroy-on-close
     class="official-viewer"
-    :title="roles.length === 2 ? '角色对比' : '官网详情'"
+    :title="roles.length === 2 ? `${kind}对比` : '官网详情'"
   >
     <template #header>
       <div class="official-viewer-heading">
-        <h2>{{ roles.length === 2 ? "角色对比" : "官网详情" }}</h2>
+        <h2>{{ roles.length === 2 ? `${kind}对比` : "官网详情" }}</h2>
         <span>官网页面{{ roles.length === 2 ? " · 左右独立滚动" : "" }}</span>
         <label for="official-zoom">页面缩放</label>
         <el-select id="official-zoom" v-model="zoom" aria-label="官网页面缩放">

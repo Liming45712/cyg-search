@@ -1,0 +1,180 @@
+{
+  "code": 200,
+  "data": {
+    "maxPageIndexNumber": 9,
+    "pageNumberList": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      0,
+      16
+    ],
+    "totalCount": 31,
+    "pageSize": 2,
+    "totalPage": 16,
+    "currentPage": 1,
+    "nextPage": 2,
+    "previousPage": 0,
+    "hasNext": "true",
+    "hasPrevious": "false",
+    "list": [
+      {
+        "goods": {
+          "goodsCode": "1622610181944570349",
+          "goodsType": 5,
+          "gameId": 16,
+          "serverId": 104,
+          "goodsName": "330g",
+          "title": "157级 神工 传说",
+          "price": 288.0,
+          "webStatus": 2,
+          "saleTime": "2026-10-21 19:44:57",
+          "offlineTime": "2026-11-04 19:44:57",
+          "attrs": [
+            {
+              "name": "资质",
+              "value": "神工"
+            },
+            {
+              "name": "成长",
+              "value": "传说"
+            },
+            {
+              "name": "悟性",
+              "value": "5"
+            },
+            {
+              "name": "成长档次",
+              "value": "10"
+            },
+            {
+              "name": "等级",
+              "value": "157级"
+            },
+            {
+              "name": "性别",
+              "value": "0"
+            },
+            {
+              "name": "性格",
+              "value": "1"
+            },
+            {
+              "name": "剩余繁殖次数",
+              "value": "0"
+            },
+            {
+              "name": "力量资质",
+              "value": "2.73"
+            },
+            {
+              "name": "心力资质",
+              "value": "2.43"
+            },
+            {
+              "name": "体力资质",
+              "value": "2.77"
+            },
+            {
+              "name": "耐力资质",
+              "value": "2.69"
+            },
+            {
+              "name": "敏捷资质",
+              "value": "2.75"
+            },
+            {
+              "name": "强化",
+              "value": "8"
+            },
+            {
+              "name": "慧心",
+              "value": "5"
+            }
+          ]
+        }
+      },
+      {
+        "goods": {
+          "goodsCode": "1622610241616280265",
+          "goodsType": 5,
+          "gameId": 16,
+          "serverId": 104,
+          "goodsName": "蜗牛",
+          "title": "159级 神工 神工",
+          "price": 1208.0,
+          "webStatus": 2,
+          "saleTime": "2026-10-27 16:16:28",
+          "offlineTime": "2026-11-10 16:16:28",
+          "attrs": [
+            {
+              "name": "资质",
+              "value": "神工"
+            },
+            {
+              "name": "成长",
+              "value": "神工"
+            },
+            {
+              "name": "悟性",
+              "value": "4"
+            },
+            {
+              "name": "成长档次",
+              "value": "11"
+            },
+            {
+              "name": "等级",
+              "value": "159级"
+            },
+            {
+              "name": "性别",
+              "value": "1"
+            },
+            {
+              "name": "性格",
+              "value": "0"
+            },
+            {
+              "name": "剩余繁殖次数",
+              "value": "0"
+            },
+            {
+              "name": "力量资质",
+              "value": "2.50"
+            },
+            {
+              "name": "心力资质",
+              "value": "2.65"
+            },
+            {
+              "name": "体力资质",
+              "value": "2.98"
+            },
+            {
+              "name": "耐力资质",
+              "value": "3.00"
+            },
+            {
+              "name": "敏捷资质",
+              "value": "3.20"
+            },
+            {
+              "name": "强化",
+              "value": "10"
+            },
+            {
+              "name": "慧心",
+              "value": "111"
+            }
+          ]
+        }
+      }
+    ],
+    "startIndex": 0
+  }
+}

@@ -1,5 +1,6 @@
 export interface Attr { raw: string; num: number | null }
 export interface Role {
+  goods_type?: number; list_attrs?: Record<string, Attr>;
   code: string; name: string; title: string; job: string; price: number | null; server_id: string;
   status: number; listed_at: string; offline_at: string; checked_at: number;
   detail: { attrs: Record<string, Attr>; equipment: Record<string, number> } | null;
