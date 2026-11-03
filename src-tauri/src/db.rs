@@ -29,9 +29,10 @@ pub fn save_roles(db: &mut Connection, roles: &[Role]) -> Result<(), String> {
             .map(|body| serde_json::from_str::<Role>(&body))
             .transpose()
             .map_err(|e| format!("缓存读取失败：{e}"))?;
-        let changed = previous
-            .as_ref()
-            .is_some_and(|old| role.listing_changed(old));
+        let changed = role.goods_type != 2
+            && previous
+                .as_ref()
+                .is_some_and(|old| role.listing_changed(old));
         let body = serde_json::to_string(role).map_err(|e| e.to_string())?;
         tx.execute(
             "INSERT INTO roles(code,server_id,body) VALUES(?1,?2,?3)
@@ -163,6 +164,21 @@ mod tests {
         db
     }
 
+    #[test]
+    fn currency_price_changes_update_quotes_without_queuing_detail_fetches() {
+        let mut db = memory();
+        let mut currency = role("1", "104");
+        currency.goods_type = 2;
+        currency.name = "银两 x2.6亿".into();
+        currency.price = Some(96.0);
+        save_roles(&mut db, &[currency.clone()]).unwrap();
+        currency.price = Some(90.0);
+        save_roles(&mut db, &[currency]).unwrap();
+        let cached = load_roles(&db).unwrap().remove(0);
+        assert_eq!(cached.price, Some(90.0));
+        assert!(!cached.needs_refresh);
+        assert!(cached.detail.is_none());
+    }
     #[test]
     fn unstable_listing_removes_only_individually_confirmed_unavailable_goods() {
         let mut db = memory();

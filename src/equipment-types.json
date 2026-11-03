@@ -1,0 +1,382 @@
+{
+  "scannedAt": "2026-11-03T12:14:19+08:00",
+  "scope": "all-server-active-and-publicity",
+  "goodsScanned": 657,
+  "servers": 17,
+  "failed": [],
+  "types": [
+    {
+      "name": "凤翼",
+      "evidence": [
+        {
+          "code": "1622610171340540242",
+          "name": "凤翼",
+          "server": "7201",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171340540242"
+        },
+        {
+          "code": "1622610171505590290",
+          "name": "凤翼",
+          "server": "5801",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171505590290"
+        },
+        {
+          "code": "1622610180137530040",
+          "name": "凤翼",
+          "server": "4001",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610180137530040"
+        }
+      ]
+    },
+    {
+      "name": "凰羽",
+      "evidence": [
+        {
+          "code": "1622610171745000378",
+          "name": "凰羽",
+          "server": "4001",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171745000378"
+        },
+        {
+          "code": "1622610172230380512",
+          "name": "凰羽",
+          "server": "4001",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610172230380512"
+        },
+        {
+          "code": "1622610180231010044",
+          "name": "凰羽",
+          "server": "103",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610180231010044"
+        }
+      ]
+    },
+    {
+      "name": "召唤兽护甲",
+      "evidence": [
+        {
+          "code": "1622610171521020302",
+          "name": "至尊七星宝甲",
+          "server": "204",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171521020302"
+        },
+        {
+          "code": "1622610242020150390",
+          "name": "至尊七星宝甲",
+          "server": "4001",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610242020150390"
+        },
+        {
+          "code": "1622610260732360102",
+          "name": "至尊七星宝甲",
+          "server": "204",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610260732360102"
+        }
+      ]
+    },
+    {
+      "name": "召唤兽护腕",
+      "evidence": [
+        {
+          "code": "1622610171509050293",
+          "name": "至尊七星宝带",
+          "server": "204",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171509050293"
+        },
+        {
+          "code": "1622610200041550034",
+          "name": "至尊七星宝带",
+          "server": "103",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610200041550034"
+        },
+        {
+          "code": "1622610241117400145",
+          "name": "至尊七星宝带",
+          "server": "103",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610241117400145"
+        }
+      ]
+    },
+    {
+      "name": "召唤兽项链",
+      "evidence": [
+        {
+          "code": "1622610171505230289",
+          "name": "至尊七星宝环",
+          "server": "204",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171505230289"
+        },
+        {
+          "code": "1622610211708550262",
+          "name": "润玉环",
+          "server": "615",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610211708550262"
+        },
+        {
+          "code": "1622610211714020265",
+          "name": "荆藤韧环",
+          "server": "615",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610211714020265"
+        }
+      ]
+    },
+    {
+      "name": "宠物武器",
+      "evidence": [
+        {
+          "code": "1622610300954220090",
+          "name": "憨蛮之怒Ⅵ",
+          "server": "104",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610300954220090"
+        },
+        {
+          "code": "1622611020905320112",
+          "name": "憨蛮之怒Ⅱ",
+          "server": "615",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622611020905320112"
+        }
+      ]
+    },
+    {
+      "name": "宠物饰品",
+      "evidence": [
+        {
+          "code": "1622611010946310105",
+          "name": "灵犀的福泽Ⅵ",
+          "server": "104",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622611010946310105"
+        }
+      ]
+    },
+    {
+      "name": "帽子",
+      "evidence": [
+        {
+          "code": "1622610192241060459",
+          "name": "凤凰的皇冠",
+          "server": "102",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610192241060459"
+        },
+        {
+          "code": "1622610251118070178",
+          "name": "凤凰的皇冠",
+          "server": "103",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610251118070178"
+        },
+        {
+          "code": "1622610272214310392",
+          "name": "凤凰的皇冠",
+          "server": "102",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610272214310392"
+        }
+      ]
+    },
+    {
+      "name": "护手",
+      "evidence": [
+        {
+          "code": "1622610180943160088",
+          "name": "乾坤无量腕",
+          "server": "104",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610180943160088"
+        },
+        {
+          "code": "1622610212145070390",
+          "name": "轮回渡厄腕",
+          "server": "4001",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610212145070390"
+        },
+        {
+          "code": "1622610261841320356",
+          "name": "苍炎破军镯",
+          "server": "7201",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610261841320356"
+        }
+      ]
+    },
+    {
+      "name": "武器",
+      "evidence": [
+        {
+          "code": "1622610180945530092",
+          "name": "神佑仙杵（巫）",
+          "server": "103",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610180945530092"
+        },
+        {
+          "code": "1622610201705340293",
+          "name": "神佑仙杵（巫）",
+          "server": "4001",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610201705340293"
+        },
+        {
+          "code": "1622610271956120304",
+          "name": "神佑神杖（术）",
+          "server": "204",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610271956120304"
+        }
+      ]
+    },
+    {
+      "name": "纹章",
+      "evidence": [
+        {
+          "code": "1622610171223070201",
+          "name": "君心之纹章",
+          "server": "103",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171223070201"
+        },
+        {
+          "code": "1622610190814470082",
+          "name": "圣者之纹章",
+          "server": "615",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610190814470082"
+        },
+        {
+          "code": "1622610190818510084",
+          "name": "君心之纹章",
+          "server": "615",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610190818510084"
+        }
+      ]
+    },
+    {
+      "name": "腰带",
+      "evidence": [
+        {
+          "code": "1622611010949420107",
+          "name": "奋勇逐风带",
+          "server": "104",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622611010949420107"
+        },
+        {
+          "code": "1622611011013510111",
+          "name": "乾坤无量带",
+          "server": "104",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622611011013510111"
+        },
+        {
+          "code": "1622611011934450309",
+          "name": "至尊龙腰（墨）",
+          "server": "104",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622611011934450309"
+        }
+      ]
+    },
+    {
+      "name": "面罩",
+      "evidence": [
+        {
+          "code": "1622610172300360523",
+          "name": "淬火的无形面具",
+          "server": "8201",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610172300360523"
+        },
+        {
+          "code": "1622610172302540526",
+          "name": "淬火的无形面具",
+          "server": "8201",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610172302540526"
+        },
+        {
+          "code": "1622610172305050528",
+          "name": "淬火的无形面具",
+          "server": "8201",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610172305050528"
+        }
+      ]
+    },
+    {
+      "name": "鞋子",
+      "evidence": [
+        {
+          "code": "1622610271429200197",
+          "name": "至尊龙靴（剑）",
+          "server": "7501",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610271429200197"
+        },
+        {
+          "code": "1622610291116070146",
+          "name": "北斗星辉靴",
+          "server": "104",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610291116070146"
+        },
+        {
+          "code": "1622611010235470050",
+          "name": "虚空极星靴",
+          "server": "104",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622611010235470050"
+        }
+      ]
+    },
+    {
+      "name": "项链",
+      "evidence": [
+        {
+          "code": "1622610171648400342",
+          "name": "神佑羽落·剑逆",
+          "server": "103",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171648400342"
+        },
+        {
+          "code": "1622610172134510464",
+          "name": "神佑羽落·破拳",
+          "server": "4001",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610172134510464"
+        },
+        {
+          "code": "1622610172137430465",
+          "name": "神佑羽落·止墨",
+          "server": "4001",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610172137430465"
+        }
+      ]
+    },
+    {
+      "name": "首饰",
+      "evidence": [
+        {
+          "code": "1622610172143040470",
+          "name": "神佑炙炎·逆变",
+          "server": "4001",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610172143040470"
+        },
+        {
+          "code": "1622610181935210339",
+          "name": "神佑炙炎·截刃",
+          "server": "103",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610181935210339"
+        },
+        {
+          "code": "1622610190806390080",
+          "name": "至尊神泪之戒",
+          "server": "615",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610190806390080"
+        }
+      ]
+    },
+    {
+      "name": "黄金甲",
+      "evidence": [
+        {
+          "code": "1622610172218000493",
+          "name": "麒麟黄金甲",
+          "server": "615",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610172218000493"
+        },
+        {
+          "code": "1622610172229080506",
+          "name": "麒麟黄金甲",
+          "server": "615",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610172229080506"
+        },
+        {
+          "code": "1622610180954090099",
+          "name": "麒麟黄金甲",
+          "server": "104",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610180954090099"
+        }
+      ]
+    }
+  ]
+}

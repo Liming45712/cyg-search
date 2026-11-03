@@ -1,8 +1,21 @@
 <script setup lang="ts">
-import { computed, reactive } from 'vue';
+import { computed, nextTick, reactive, ref, watch } from 'vue';
+import type { SpiritSimulation } from './spirit-simulation';
 import { calculateSpirit, defaultSpirit, qualityRates, spiritDirections, spiritLevels, spiritStats, treasureStats } from './spirit';
 
+const props = defineProps<{ simulation?: SpiritSimulation | null }>();
 const input = reactive(defaultSpirit());
+const imported = ref<SpiritSimulation | null>(null);
+const calculatorRoot = ref<HTMLElement>();
+const levels = computed(()=>[...new Set<number>([...spiritLevels,...(imported.value?.input.level!==undefined?[imported.value.input.level]:[])])].sort((a,b)=>a-b));
+watch(()=>props.simulation,async value=>{
+  if (!value) return;
+  Object.assign(input,{...value.input,aptitude:{...value.input.aptitude},treasureBase:{...value.input.treasureBase},treasureExtra:{...value.input.treasureExtra},treasureFive:{...value.input.treasureFive}});
+  imported.value = value;
+  await nextTick();
+  if(calculatorRoot.value)calculatorRoot.value.scrollTop=0;
+},{immediate:true});
+function restore(){Object.assign(input,defaultSpirit());imported.value=null;}
 const result = computed(() => calculateSpirit(input));
 const fmt = (value: number) => new Intl.NumberFormat('zh-CN', { maximumFractionDigits: 6 }).format(value);
 const directions = [
@@ -18,14 +31,20 @@ const treasureGroups = [
 </script>
 
 <template>
-  <section class="spirit-calculator" aria-label="星灵与灵宝计算器">
+  <section ref="calculatorRoot" class="spirit-calculator" aria-label="星灵与灵宝计算器">
     <div class="calculator-heading">
       <div>
         <h2>星灵 / 灵宝计算器</h2>
-        <p>按原表蓝色格子手动填写，修改后自动计算。初始值为 Excel 示例。</p>
+        <p>计算方式出处：@拙耳</p>
       </div>
-      <el-button @click="Object.assign(input, defaultSpirit())">恢复表中示例</el-button>
+      <el-button @click="restore">恢复表中示例</el-button>
     </div>
+    <el-alert v-if="imported" class="simulation-source" :title="`已导入星灵：${imported.name}`" type="info" :closable="false" show-icon>
+      <p>已带入官网可用的等级、品质、强化、慧心和五项资质；转星将沿用选购页设置。</p>
+      <p v-if="imported.missing.length">官网详情缺少或无法识别：{{ imported.missing.join('、') }}，请手动补全。</p>
+      <p>领悟点数与缺失的慧心默认按 1 模拟，可手动修改。加点方向默认「无」，表示不分配；灵宝留空按 0 计算，请按模拟方案补充。模拟结果不代表官网当前加点面板。</p>
+      <p v-if="imported.stale">本次使用待更新的缓存详情，建议更新后重新导入。</p>
+    </el-alert>
     <div class="calculator-layout">
       <el-form class="calculator-inputs" label-position="top" @submit.prevent>
         <section class="calculator-section">
@@ -33,7 +52,7 @@ const treasureGroups = [
           <div class="calculator-fields">
             <el-form-item label="等级">
               <el-select v-model="input.level" aria-label="星灵等级">
-                <el-option v-for="level in spiritLevels" :key="level" :value="level" :label="level ? `${level}级` : '不带星灵'" />
+                <el-option v-for="level in levels" :key="level" :value="level" :label="level ? `${level}级` : '不带星灵'" />
               </el-select>
             </el-form-item>
             <el-form-item label="资质品质">
@@ -144,6 +163,7 @@ const treasureGroups = [
 .calculator-heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
 .calculator-heading h2 { font-size: 20px; }
 .calculator-heading p, .calculator-section > p { color: var(--el-text-color-secondary); line-height: 1.7; margin-top: 6px; }
+.simulation-source { max-width:1500px;margin:0 auto 20px; }.simulation-source p { margin:4px 0;line-height:1.7; }
 .calculator-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(380px, 0.7fr); gap: 28px; align-items: start; max-width: 1500px; margin: 0 auto; }
 .calculator-heading { max-width: 1500px; margin-left: auto; margin-right: auto; }
 .calculator-section { background: white; padding: 20px 24px; margin-bottom: 16px; }

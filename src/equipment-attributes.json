@@ -1,0 +1,522 @@
+{
+  "source": "cached-all-server-active-and-publicity-details",
+  "scannedAt": "2026-11-03T12:14:19+08:00",
+  "attributes": [
+    {
+      "name": "HP",
+      "evidence": [
+        {
+          "type": "凤翼",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171340540242"
+        },
+        {
+          "type": "召唤兽项链",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171505230289"
+        }
+      ]
+    },
+    {
+      "name": "SP",
+      "evidence": [
+        {
+          "type": "凤翼",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171340540242"
+        },
+        {
+          "type": "凤翼",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171505590290"
+        }
+      ]
+    },
+    {
+      "name": "体质",
+      "evidence": [
+        {
+          "type": "纹章",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171223070201"
+        },
+        {
+          "type": "凤翼",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171505590290"
+        }
+      ]
+    },
+    {
+      "name": "力量",
+      "evidence": [
+        {
+          "type": "纹章",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171223070201"
+        },
+        {
+          "type": "凤翼",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171340540242"
+        }
+      ]
+    },
+    {
+      "name": "命中率",
+      "evidence": [
+        {
+          "type": "凤翼",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610181218550171"
+        },
+        {
+          "type": "凰羽",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610181743380298"
+        }
+      ]
+    },
+    {
+      "name": "回避率",
+      "evidence": [
+        {
+          "type": "鞋子",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610271429200197"
+        }
+      ]
+    },
+    {
+      "name": "土属性攻击",
+      "evidence": [
+        {
+          "type": "凰羽",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610172230380512"
+        },
+        {
+          "type": "凤翼",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610202214240458"
+        }
+      ]
+    },
+    {
+      "name": "基本命中率",
+      "evidence": [
+        {
+          "type": "护手",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610180943160088"
+        },
+        {
+          "type": "护手",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610212145070390"
+        }
+      ]
+    },
+    {
+      "name": "基本攻击力",
+      "evidence": [
+        {
+          "type": "武器",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610180945530092"
+        },
+        {
+          "type": "武器",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610201705340293"
+        }
+      ]
+    },
+    {
+      "name": "基本精神力",
+      "evidence": [
+        {
+          "type": "武器",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610180945530092"
+        },
+        {
+          "type": "帽子",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610192241060459"
+        }
+      ]
+    },
+    {
+      "name": "基本防御力",
+      "evidence": [
+        {
+          "type": "召唤兽护甲",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171521020302"
+        },
+        {
+          "type": "召唤兽护甲",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610242020150390"
+        }
+      ]
+    },
+    {
+      "name": "异常必闪",
+      "evidence": [
+        {
+          "type": "凰羽",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610182018460367"
+        },
+        {
+          "type": "凤翼",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610191109060179"
+        }
+      ]
+    },
+    {
+      "name": "异常抗性",
+      "evidence": [
+        {
+          "type": "凤翼",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171505590290"
+        },
+        {
+          "type": "凤翼",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610202207200446"
+        }
+      ]
+    },
+    {
+      "name": "异常抗性削弱",
+      "evidence": [
+        {
+          "type": "凤翼",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171340540242"
+        },
+        {
+          "type": "凤翼",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610182204390456"
+        }
+      ]
+    },
+    {
+      "name": "心力",
+      "evidence": [
+        {
+          "type": "纹章",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171223070201"
+        },
+        {
+          "type": "纹章",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171223070201"
+        }
+      ]
+    },
+    {
+      "name": "攻击力",
+      "evidence": [
+        {
+          "type": "凤翼",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171340540242"
+        },
+        {
+          "type": "黄金甲",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610172229080506"
+        }
+      ]
+    },
+    {
+      "name": "敏捷",
+      "evidence": [
+        {
+          "type": "纹章",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171223070201"
+        },
+        {
+          "type": "凤翼",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171340540242"
+        }
+      ]
+    },
+    {
+      "name": "暴击率",
+      "evidence": [
+        {
+          "type": "项链",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171648400342"
+        },
+        {
+          "type": "面罩",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610172300360523"
+        }
+      ]
+    },
+    {
+      "name": "水属性攻击",
+      "evidence": [
+        {
+          "type": "凤翼",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610182222100467"
+        },
+        {
+          "type": "凰羽",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610201525220232"
+        }
+      ]
+    },
+    {
+      "name": "法术必闪",
+      "evidence": [
+        {
+          "type": "凰羽",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610172230380512"
+        },
+        {
+          "type": "黄金甲",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610182045220393"
+        }
+      ]
+    },
+    {
+      "name": "法术抗性",
+      "evidence": [
+        {
+          "type": "黄金甲",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610200142080068"
+        },
+        {
+          "type": "纹章",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610202244030480"
+        }
+      ]
+    },
+    {
+      "name": "法术抗性削弱",
+      "evidence": [
+        {
+          "type": "凰羽",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171745000378"
+        },
+        {
+          "type": "凤翼",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610180137530040"
+        }
+      ]
+    },
+    {
+      "name": "激活异常免疫时效果",
+      "evidence": [
+        {
+          "type": "黄金甲",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610201548390239"
+        },
+        {
+          "type": "黄金甲",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610220121160039"
+        }
+      ]
+    },
+    {
+      "name": "激活异常破免时效果",
+      "evidence": [
+        {
+          "type": "黄金甲",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610172218000493"
+        },
+        {
+          "type": "黄金甲",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610242306440538"
+        }
+      ]
+    },
+    {
+      "name": "激活法术免疫时效果",
+      "evidence": [
+        {
+          "type": "黄金甲",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610200008290009"
+        },
+        {
+          "type": "黄金甲",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610250414120105"
+        }
+      ]
+    },
+    {
+      "name": "激活法术破免时效果",
+      "evidence": [
+        {
+          "type": "黄金甲",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610190913450103"
+        },
+        {
+          "type": "黄金甲",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610200142080068"
+        }
+      ]
+    },
+    {
+      "name": "激活物理免疫时效果",
+      "evidence": [
+        {
+          "type": "黄金甲",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610190257060056"
+        },
+        {
+          "type": "黄金甲",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610200006280004"
+        }
+      ]
+    },
+    {
+      "name": "激活物理破免时效果",
+      "evidence": [
+        {
+          "type": "黄金甲",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610180954090099"
+        },
+        {
+          "type": "黄金甲",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610220117290038"
+        }
+      ]
+    },
+    {
+      "name": "火属性攻击",
+      "evidence": [
+        {
+          "type": "凤翼",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610201708190297"
+        },
+        {
+          "type": "凤翼",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610210921280077"
+        }
+      ]
+    },
+    {
+      "name": "灵巧度",
+      "evidence": [
+        {
+          "type": "召唤兽护腕",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171509050293"
+        },
+        {
+          "type": "首饰",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610172143040470"
+        }
+      ]
+    },
+    {
+      "name": "物理伤害",
+      "evidence": [
+        {
+          "type": "凰羽",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610180231010044"
+        },
+        {
+          "type": "凤翼",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610181016200110"
+        }
+      ]
+    },
+    {
+      "name": "物理必闪",
+      "evidence": [
+        {
+          "type": "黄金甲",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610172218000493"
+        },
+        {
+          "type": "黄金甲",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610172229080506"
+        }
+      ]
+    },
+    {
+      "name": "物理抗性",
+      "evidence": [
+        {
+          "type": "黄金甲",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610250332140090"
+        },
+        {
+          "type": "黄金甲",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610250356080101"
+        }
+      ]
+    },
+    {
+      "name": "物理抗性削弱",
+      "evidence": [
+        {
+          "type": "凰羽",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610192358220506"
+        },
+        {
+          "type": "凰羽",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610201547590238"
+        }
+      ]
+    },
+    {
+      "name": "精神力",
+      "evidence": [
+        {
+          "type": "凰羽",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171745000378"
+        },
+        {
+          "type": "凰羽",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171745000378"
+        }
+      ]
+    },
+    {
+      "name": "耐力",
+      "evidence": [
+        {
+          "type": "纹章",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171223070201"
+        },
+        {
+          "type": "凤翼",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171505590290"
+        }
+      ]
+    },
+    {
+      "name": "闪避率",
+      "evidence": [
+        {
+          "type": "凤翼",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171505590290"
+        },
+        {
+          "type": "凰羽",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610180231010044"
+        }
+      ]
+    },
+    {
+      "name": "防御力",
+      "evidence": [
+        {
+          "type": "凰羽",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171745000378"
+        },
+        {
+          "type": "凰羽",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610172230380512"
+        }
+      ]
+    },
+    {
+      "name": "风属性攻击",
+      "evidence": [
+        {
+          "type": "黄金甲",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610180954090099"
+        },
+        {
+          "type": "黄金甲",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610181852060325"
+        }
+      ]
+    },
+    {
+      "name": "魔法伤害",
+      "evidence": [
+        {
+          "type": "纹章",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171223070201"
+        },
+        {
+          "type": "凤翼",
+          "url": "http://cyg.changyou.com/details?goodsCode=1622610171340540242"
+        }
+      ]
+    }
+  ]
+}

@@ -14,10 +14,10 @@ export const treasureStats = ['HP', 'SP', '攻击', '防御', '精神', '闪避'
 type TreasureStat = typeof treasureStats[number];
 type Numbers<K extends string> = Record<K, number | undefined>;
 export interface SpiritInput {
-  level: number;
-  quality: Quality;
-  growth: Quality;
-  stars: number;
+  level: number | undefined;
+  quality: Quality | '';
+  growth: Quality | '';
+  stars: number | undefined;
   huixin: number | undefined;
   insight: number | undefined;
   allocation: SpiritDirection;
@@ -46,9 +46,9 @@ export function defaultSpirit(): SpiritInput {
 
 export function calculateSpirit(input: SpiritInput) {
   const invalid = (n: number | undefined) => typeof n !== 'number' || !Number.isFinite(n) || n < 0;
-  if (!(spiritLevels as readonly number[]).includes(input.level)
+  if (typeof input.level !== 'number' || !Number.isInteger(input.level) || input.level < 0 || input.level > 159
     || !Object.hasOwn(qualityRates, input.quality) || !Object.hasOwn(qualityRates, input.growth)
-    || invalid(input.stars) || !Number.isInteger(input.stars) || input.stars > 10)
+    || typeof input.stars !== 'number' || invalid(input.stars) || !Number.isInteger(input.stars) || input.stars > 10)
     return { error: '请选择有效的等级、品质和强化星级。' } as const;
   if (invalid(input.huixin) || !Number.isInteger(input.huixin) || input.huixin! > 139
     || invalid(input.insight) || !Number.isInteger(input.insight) || input.insight! > 139)

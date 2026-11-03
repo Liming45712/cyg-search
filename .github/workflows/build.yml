@@ -6,6 +6,11 @@ on:
     tags: ["v*"]
   pull_request:
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: '发布版本标签（留空只打包，例如 v0.7.0）'
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -125,3 +130,31 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
+
+  release:
+    name: Publish release
+    if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.release_tag != '')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Publish this build's desktop apps
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          tag="${RELEASE_TAG:-$GITHUB_REF_NAME}"
+          [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          gh run download "$GITHUB_RUN_ID" --pattern 'cyg-search-*' --dir release-assets
+          mac_app="release-assets/cyg-search-macos-universal/cyg-search-macos-universal.zip"
+          windows_app="release-assets/cyg-search-windows-x64/畅易阁角色筛选.exe"
+          windows_notes="release-assets/cyg-search-windows-x64/使用说明.txt"
+          test -s "$mac_app"
+          test -s "$windows_app"
+          test -s "$windows_notes"
+          gh release create "$tag" "$mac_app" "$windows_app" "$windows_notes" \
+            --target "$GITHUB_SHA" --title "$tag" --generate-notes --draft
+          gh release edit "$tag" --draft=false --latest

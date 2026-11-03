@@ -1,6 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 mod api;
 mod db;
+mod gear;
 mod model;
 mod parser;
 
@@ -70,6 +71,12 @@ fn snapshot(state: State<'_, AppState>) -> Result<Snapshot, String> {
     roles.extend(db::load_roles(&db::connect(
         &state.path.with_file_name("spirits.db"),
     )?)?);
+    roles.extend(db::load_roles(&db::connect(
+        &state.path.with_file_name("equipment.db"),
+    )?)?);
+    roles.extend(db::load_roles(&db::connect(
+        &state.path.with_file_name("currency.db"),
+    )?)?);
     Ok(Snapshot {
         roles,
         areas: db::load_areas(&conn)?,
@@ -113,7 +120,7 @@ async fn crawl(
     goods_type: Option<u8>,
 ) -> Result<Summary, String> {
     let goods_type = goods_type.unwrap_or(1);
-    if ![1, 5].contains(&goods_type) {
+    if ![1, 2, 3, 5].contains(&goods_type) {
         return Err("不支持的商品类型".into());
     }
     validate_server(
@@ -143,13 +150,19 @@ async fn crawl_inner(
     force: bool,
     goods_type: u8,
 ) -> Result<Summary, String> {
-    // Separate caches keep a star-list refresh from pruning existing role data.
-    let path = if goods_type == 5 {
-        state.path.with_file_name("spirits.db")
-    } else {
-        state.path.clone()
+    // Each marketplace has its own cache so refresh/pruning cannot affect another category.
+    let path = match goods_type {
+        2 => state.path.with_file_name("currency.db"),
+        3 => state.path.with_file_name("equipment.db"),
+        5 => state.path.with_file_name("spirits.db"),
+        _ => state.path.clone(),
     };
-    let kind = if goods_type == 5 { "星灵" } else { "角色" };
+    let kind = match goods_type {
+        2 => "游戏币",
+        3 => "装备",
+        5 => "星灵",
+        _ => "角色",
+    };
     let cancelled = || state.cancel.load(Ordering::SeqCst);
     let stopped = |fetched, failed, removed| Summary {
         cancelled: true,
@@ -159,7 +172,7 @@ async fn crawl_inner(
         last_error: None,
     };
     let mut keep = HashSet::new();
-    if force {
+    if force && goods_type != 2 {
         db::mark_refresh(&db::connect(&path)?, sid)?;
     }
     let mut cleanup_safe = true;
@@ -278,6 +291,19 @@ async fn crawl_inner(
         }
         removed
     };
+    if goods_type == 2 {
+        progress(app, "done", keep.len(), keep.len(), format!(
+            "更新完成：{} 条游戏币报价，数量与售价已更新，无需拉取详情；清理 {removed} 条，保留 {unconfirmed} 条未确认下架的缓存",
+            keep.len()
+        ));
+        return Ok(Summary {
+            cancelled: false,
+            fetched: 0,
+            failed: 0,
+            removed,
+            last_error: None,
+        });
+    }
     let pending: Vec<Role> = db::load_roles(&db::connect(&path)?)?
         .into_iter()
         .filter(|r| {

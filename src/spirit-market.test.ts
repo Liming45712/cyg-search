@@ -37,3 +37,22 @@ test('stale list quality does not mix with an older cached detail panel', () => 
   item.list_attrs = { 资质: attr('逆天'), 成长: attr('逆天'), 强化: attr('0', 0) };
   assert.equal(marketSpirit(item, false).detail!.attrs.加成攻击.num, 46.2);
 });
+
+test('all eight bonus columns sort the full result numerically with missing values last', () => {
+  const rows = Array.from({ length: 60 }, (_, i) => {
+    const row = sample(); row.code = String(i);
+    for (const field of spiritPanelFields) row.detail!.attrs[field.source] = attr(String(i), i);
+    return marketSpirit(row, true);
+  });
+  const missing = sample(); missing.code = 'missing'; missing.detail = null;
+  rows.push(marketSpirit(missing, true));
+  for (const field of spiritPanelFields) {
+    const filters = defaults('104'); filters.sort = `加成${field.name}`;
+    assert.equal(applyFilters(rows, filters)[0].code, '0');
+    filters.desc = true;
+    const sorted = applyFilters(rows, filters);
+    assert.equal(sorted[0].code, '59');
+    assert.equal(sorted.at(-1)!.code, 'missing');
+    assert.equal(sorted.slice(0, 50).at(-1)!.code, '10');
+  }
+});

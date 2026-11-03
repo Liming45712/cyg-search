@@ -1,0 +1,57 @@
+{
+  "code": 200,
+  "data": {
+    "totalPage": 16,
+    "totalCount": 32,
+    "list": [
+      {
+        "goods": {
+          "gameId": 16,
+          "goodsType": 2,
+          "goodsCode": "1622610221439310224",
+          "goodsName": "银两 x2.6亿",
+          "serverId": 104,
+          "price": 96.0,
+          "webStatus": 2,
+          "saleTime": "2026-10-25 14:39:31",
+          "offlineTime": "2026-11-05 14:39:31",
+          "updateTime": "2026-10-25 14:39:34",
+          "attrs": [
+            {
+              "name": "",
+              "value": "1元=270.8333万银两"
+            },
+            {
+              "name": "",
+              "value": "0.0037元/万银两"
+            }
+          ]
+        }
+      },
+      {
+        "goods": {
+          "gameId": 16,
+          "goodsType": 2,
+          "goodsCode": "1622610221441420228",
+          "goodsName": "银两 x2.6亿",
+          "serverId": 104,
+          "price": 96.0,
+          "webStatus": 2,
+          "saleTime": "2026-10-25 14:41:42",
+          "offlineTime": "2026-11-05 14:41:42",
+          "updateTime": "2026-10-25 14:41:46",
+          "attrs": [
+            {
+              "name": "",
+              "value": "1元=270.8333万银两"
+            },
+            {
+              "name": "",
+              "value": "0.0037元/万银两"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

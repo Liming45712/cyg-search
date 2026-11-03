@@ -9,6 +9,8 @@ pub struct Attr {
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct Detail {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub gear: Option<crate::gear::Gear>,
     pub attrs: BTreeMap<String, Attr>,
     pub equipment: BTreeMap<String, u32>,
 }

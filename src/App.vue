@@ -25,6 +25,9 @@ import RangeInput from "./RangeInput.vue";
 import OfficialViewer from "./OfficialViewer.vue";
 import SpiritCalculator from "./SpiritCalculator.vue";
 import SpiritMarket from "./SpiritMarket.vue";
+import type { SpiritSimulation } from "./spirit-simulation";
+import EquipmentMarket from "./EquipmentMarket.vue";
+import CurrencyMarket from "./CurrencyMarket.vue";
 import { toggleComparison } from "./comparison";
 import { useScrollRows } from "./scroll-rows";
 import {
@@ -59,8 +62,12 @@ interface Summary {
 }
 const desktop = isTauri();
 const activeTab = ref('roles');
+const spiritSimulation = shallowRef<SpiritSimulation | null>(null);
+function simulateSpirit(value: SpiritSimulation) { spiritSimulation.value = value; activeTab.value = 'spirit'; }
 const goods = shallowRef<Role[]>([]);
 const roles = computed(() => goods.value.filter(item => (item.goods_type ?? 1) === 1));
+const currencies = computed(() => goods.value.filter(item => item.goods_type === 2));
+const equipment = computed(() => goods.value.filter(item => item.goods_type === 3));
 const spirits = computed(() => goods.value.filter(item => item.goods_type === 5));
 const areas = shallowRef<Area[]>([]);
 const filters = reactive(defaults(localStorage.getItem("cyg-server") || "104"));
@@ -377,7 +384,7 @@ async function sync() {
     return;
   }
   busy.value = true;
-  const goodsType = activeTab.value === 'market' ? 5 : 1;
+  const goodsType = activeTab.value === 'currency' ? 2 : activeTab.value === 'equipment' ? 3 : activeTab.value === 'market' ? 5 : 1;
   stopping.value = false;
   notice.value = "";
   progress.value = {
@@ -394,7 +401,7 @@ async function sync() {
   try {
     const operation = invoke<Summary>("crawl", {
       serverId: filters.server,
-      force: force.value,
+      force: goodsType === 2 ? false : force.value,
       goodsType,
     });
     force.value = false;
@@ -523,7 +530,7 @@ onBeforeUnmount(() => {
           /></el-tooltip>
         </div>
         <div class="source-divider" />
-        <el-checkbox v-model="force" :disabled="busy" @change="changeFullRefresh">全量刷新详情</el-checkbox>
+        <el-checkbox v-if="activeTab !== 'currency'" v-model="force" :disabled="busy" @change="changeFullRefresh">全量刷新详情</el-checkbox>
         <el-button
           v-if="busy"
           id="cancel"
@@ -1042,10 +1049,16 @@ onBeforeUnmount(() => {
     </main>
       </el-tab-pane>
       <el-tab-pane label="星灵选购" name="market">
-        <SpiritMarket :items="spirits" :server="filters.server" :busy="busy" />
+        <SpiritMarket :items="spirits" :server="filters.server" :busy="busy" @simulate="simulateSpirit" @error="showNotice" />
+      </el-tab-pane>
+      <el-tab-pane label="装备选购" name="equipment">
+        <EquipmentMarket :items="equipment" :server="filters.server" :busy="busy" @error="showNotice" />
+      </el-tab-pane>
+      <el-tab-pane label="游戏币" name="currency">
+        <CurrencyMarket :items="currencies" :server="filters.server" :busy="busy" @error="showNotice" />
       </el-tab-pane>
       <el-tab-pane label="星灵 / 灵宝计算器" name="spirit">
-        <SpiritCalculator />
+        <SpiritCalculator :simulation="spiritSimulation" />
       </el-tab-pane>
     </el-tabs>
     <footer v-show="activeTab !== 'spirit'" class="status-bar">

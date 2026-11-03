@@ -91,12 +91,21 @@ test('rejects missing required values, invalid numbers, unsupported levels and o
     assert.ok(calculateSpirit(input).error);
   }
   const input = defaultSpirit();
-  input.level = 100;
-  assert.ok(calculateSpirit(input).error);
+  for (const level of [undefined,NaN,-1,160,1.5]) { input.level = level; assert.ok(calculateSpirit(input).error); }
   input.level = 159;
   input.treasureExtra.HP = -1;
   assert.ok(calculateSpirit(input).error);
   input.treasureExtra.HP = 0;
   input.aptitude.力量 = Number.MAX_VALUE;
   assert.ok(calculateSpirit(input).error);
+});
+
+
+test('supports actual marketplace levels without rounding to Excel milestones', () => {
+  for (const level of [1,50,100,157]) {
+    const input = defaultSpirit(); input.level = level;
+    const result = calculateSpirit(input); assert.equal(result.error,null);
+    if(result.error!==null)continue;
+    assert.equal(result.base,level+9); assert.equal(result.points,level*5);
+  }
 });

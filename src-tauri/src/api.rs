@@ -64,7 +64,7 @@ pub async fn list(
     size: usize,
     goods_type: u8,
 ) -> Result<ListPage, String> {
-    if ![1, 5].contains(&goods_type) {
+    if ![1, 2, 3, 5].contains(&goods_type) {
         return Err("不支持的商品类型".into());
     }
     let value: Value = client.post(format!("{BASE}/list/filterSortGoods.json"))
@@ -154,8 +154,9 @@ pub async fn detail(
     // shortcut: the official detail host has an invalid HTTPS certificate; use its public HTTP endpoint until it supports valid TLS.
     let html = client
         .get(format!(
-            "http://public.npt.changyou.com/details/16/{code}.html"
+            "http://public.npt.changyou.com//details/16/{code}.html"
         ))
+        .header("Referer", format!("{BASE}/details?goodsCode={code}"))
         .send()
         .await
         .map_err(|e| e.to_string())?
@@ -167,12 +168,16 @@ pub async fn detail(
     match goods_type {
         1 => crate::parser::parse(&html),
         5 => crate::parser::parse_spirit(&html),
+        3 => crate::gear::parse(&html),
         _ => Err("不支持的商品类型".into()),
     }
 }
 
 pub async fn unavailable(client: &Client, role: &Role) -> Result<bool, String> {
-    if !valid_id(&role.code) || !valid_id(&role.server_id) || ![1, 5].contains(&role.goods_type) {
+    if !valid_id(&role.code)
+        || !valid_id(&role.server_id)
+        || ![1, 2, 3, 5].contains(&role.goods_type)
+    {
         return Err("商品编号或分类格式错误".into());
     }
     let html = client
@@ -211,6 +216,49 @@ mod tests {
         let page = decode_page(checked(response).unwrap(), "104", 5).unwrap();
         assert_eq!(page.roles[0].listing_updated_at, "2026-10-21 19:45:00");
         assert!(page.roles[1].listing_updated_at.is_empty());
+    }
+    #[test]
+    fn currency_list_preserves_explicit_quantity_and_total_price() {
+        let response: Value = serde_json::from_str(include_str!("../tests/currency.json")).unwrap();
+        let data = checked(response).unwrap();
+        let page = decode_page(data.clone(), "104", 2).unwrap();
+        assert_eq!(page.roles[0].goods_type, 2);
+        assert_eq!(page.roles[0].name, "银两 x2.6亿");
+        assert_eq!(page.roles[0].price, Some(96.0));
+        assert!(decode_page(data.clone(), "104", 1).is_err());
+        assert!(decode_page(data, "615", 2).is_err());
+    }
+    #[tokio::test]
+    #[ignore = "one official currency list request; no per-item detail requests"]
+    async fn live_currency_sample() {
+        let page = list(&client().unwrap(), "104", 2, 1, 2, 2).await.unwrap();
+        assert!(!page.roles.is_empty());
+        assert!(page
+            .roles
+            .iter()
+            .all(|r| r.name.contains("银两") && r.price.is_some()));
+    }
+    #[test]
+    fn equipment_list_keeps_metadata_and_rejects_wrong_category() {
+        let data = json!({"totalPage":1,"totalCount":1,"list":[{"goods":{
+            "gameId":16,"goodsType":3,"goodsCode":"1622610242100300428","serverId":104,
+            "goodsName":"凤翼","price":321,"webStatus":2,"saleTime":"2026-11-03 12:00:00",
+            "attrs":[{"name":"装备品级","value":"逆天"},{"name":"装备评分","value":"600"}]
+        }}]});
+        let page = decode_page(data.clone(), "104", 3).unwrap();
+        assert_eq!(page.roles[0].list_attrs["装备品级"].raw, "逆天");
+        assert_eq!(page.roles[0].price, Some(321.0));
+        assert!(decode_page(data.clone(), "104", 1).is_err());
+        assert!(decode_page(data, "615", 3).is_err());
+    }
+    #[tokio::test]
+    #[ignore = "one official equipment list and detail request; run explicitly"]
+    async fn live_equipment_sample() {
+        let c = client().unwrap();
+        let page = list(&c, "104", 2, 1, 2, 3).await.unwrap();
+        assert!(!page.roles.is_empty());
+        let result = detail(&c, &page.roles[0].code, 3).await.unwrap();
+        assert!(result.gear.is_some());
     }
     #[tokio::test]
     #[ignore = "one public star list and detail request; run explicitly"]
