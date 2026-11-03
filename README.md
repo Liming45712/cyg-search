@@ -36,7 +36,7 @@
 
 公式沿用拙耳 Excel：品质比例与强化比例相加后折算星灵面板，已转星将再乘 1.1；神逆灵宝开关控制慧心固定点数。灵宝空值按 0 计算，必填数值缺失时提示补全。显示最多 6 位小数，中间不取整。选择「不带星灵」仅清零等级点数，慧心、领悟及灵宝属性仍按填写值计算。公式尚未通过游戏面板实测校准。
 
-当前版本为 **0.4.0**。已配置 GitHub Actions 自动打包 macOS 通用版 `.app.zip`（Apple Silicon / Intel）和 Windows x64 NSIS `.exe` 安装包；macOS 最低系统版本配置为 11.0。暂未配置 Linux 安装包。
+当前版本为 **0.4.0**。已配置 GitHub Actions 自动打包 macOS 通用版 `.app.zip`（Apple Silicon / Intel）和 Windows x64 绿色版 `.exe`；macOS 最低系统版本配置为 11.0。暂未配置 Linux 安装包。
 
 ## 开始使用
 
@@ -135,7 +135,7 @@ macOS 下的 SQLite 数据库位于：
 | `npm run tauri -- dev` | 启动带 Rust 后端的桌面开发模式 |
 | `npm run build` | 检查前端类型并构建到 `dist/` |
 | `npm run bundle:mac` | 构建当前 Mac 架构的调试版 `.app`，并执行本地 ad-hoc 签名 |
-| `npm run bundle:windows` | 在 Windows 上构建当前架构的 release 版 NSIS `.exe` 安装包 |
+| `npm run bundle:windows` | 在 Windows 上构建当前架构的 release 版免安装 `.exe` |
 | `npm run tauri -- build` | 构建 release 版桌面应用 |
 
 **浏览器模式仅用于预览界面**，无法调用 Tauri 后端，不会获取或保存真实角色数据。完整功能请在桌面模式中使用。
@@ -164,11 +164,11 @@ src-tauri/target/release/bundle/macos/畅易阁角色筛选.app
 | Artifact | 内容 |
 | --- | --- |
 | `cyg-search-macos-universal` | 通用版 `.app.zip`，解压后得到 `.app`，兼容 Apple Silicon 和 Intel |
-| `cyg-search-windows-x64` | Windows x64 简体中文 NSIS `.exe` 安装包 |
+| `cyg-search-windows-x64` | Windows x64 绿色版 `.exe` 与使用说明，下载解压后直接运行 |
 
 CI 使用 Node.js 22 和 Rust stable，通过 `npm ci` 与 Cargo 的 `--locked` 使用锁定依赖。macOS 在一个任务中构建 ARM64、x86_64 并合并为通用版，压缩前验证两种架构和 ad-hoc 签名。配置参考 [Tauri 的 GitHub Actions 指引](https://v2.tauri.app/distribute/pipelines/github/)。
 
-无需配置签名 Secrets 即可运行。macOS 产物仅使用 ad-hoc 签名，未经过 Apple Developer ID 签名或公证；Windows 安装包未配置代码签名，首次打开时系统可能显示安全或未知发布者提示。
+无需配置签名 Secrets 即可运行。macOS 产物仅使用 ad-hoc 签名，未经过 Apple Developer ID 签名或公证；Windows 程序未配置代码签名，首次打开时系统可能显示安全或未知发布者提示。
 
 ### Windows 打包
 
@@ -179,11 +179,13 @@ npm ci
 npm run bundle:windows
 ```
 
-Tauri 会自动将 `src-tauri/tauri.windows.conf.json` 合并到主配置，使用 Windows `.ico` 图标，生成简体中文安装程序。默认仅为当前用户安装；使用默认 WebView2 安装策略，目标电脑缺少运行时时，安装程序会联网下载安装所需运行时。
+Tauri 会自动合并 `src-tauri/tauri.windows.conf.json`，使用 Windows `.ico` 图标，并跳过安装程序生成。可执行文件输出到 `src-tauri/target/release/cyg-finder.exe`，可重命名为「畅易阁角色筛选.exe」直接运行。CI 构建的 x64 文件位于 `src-tauri/target/x86_64-pc-windows-msvc/release/cyg-finder.exe`，与 [Windows 使用说明](docs/windows-portable.txt) 一起上传；CI 从最终产物目录启动程序并检查是否创建窗口。
 
-安装包输出到 `src-tauri/target/release/bundle/nsis/`，文件名以 `-setup.exe` 结尾。此命令用于 Windows 本机打包，不会在 macOS 上自动完成交叉编译。当前未配置 Windows 代码签名，系统可能显示未知发布者或 SmartScreen 提示。
+绿色版使用系统已安装的 Microsoft Edge WebView2 Runtime，不附带完整浏览器运行时；缺少时需要先从微软官网安装。角色、星灵缓存和界面设置继续保存在系统用户数据目录，移动程序不影响已有缓存，也不会将这些缓存随程序一起迁移到其他电脑。
 
-配置依据：[Tauri 平台配置](https://v2.tauri.app/reference/config/)、[Windows 环境准备](https://v2.tauri.app/start/prerequisites/)、[Windows 安装包](https://v2.tauri.app/distribute/windows-installer/)。
+此命令用于 Windows 本机打包，不会在 macOS 上自动完成交叉编译。当前未配置 Windows 代码签名，系统可能显示未知发布者或 SmartScreen 提示。
+
+配置依据：[Tauri 平台配置](https://v2.tauri.app/reference/config/)、[Windows 环境准备](https://v2.tauri.app/start/prerequisites/)、[WebView2 分发](https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/distribution)。
 
 ### 主要代码位置
 

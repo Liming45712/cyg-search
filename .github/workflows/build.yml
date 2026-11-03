@@ -86,18 +86,38 @@ jobs:
           mkdir -p artifacts
           ditto -c -k --sequesterRsrc --keepParent "$app" artifacts/cyg-search-macos-universal.zip
 
-      - name: Build Windows installer
+      - name: Build Windows portable app
         if: runner.os == 'Windows'
-        run: npm run tauri -- build --ci --target x86_64-pc-windows-msvc --bundles nsis -- --locked
+        run: npm run bundle:windows -- --ci --target x86_64-pc-windows-msvc -- --locked
 
-      - name: Collect Windows installer
+      - name: Collect Windows portable app
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
+          $ErrorActionPreference = 'Stop'
           New-Item -ItemType Directory -Path artifacts -Force | Out-Null
-          Get-ChildItem "src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*-setup.exe" | Copy-Item -Destination artifacts
+          Copy-Item -LiteralPath "src-tauri/target/x86_64-pc-windows-msvc/release/cyg-finder.exe" -Destination "artifacts/畅易阁角色筛选.exe"
+          Copy-Item -LiteralPath "docs/windows-portable.txt" -Destination "artifacts/使用说明.txt"
 
-      - name: Upload installer
+      - name: Smoke test Windows portable app
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $app = Start-Process -FilePath (Resolve-Path "artifacts/畅易阁角色筛选.exe") -PassThru
+          try {
+            for ($attempt = 0; $attempt -lt 30; $attempt++) {
+              Start-Sleep -Seconds 1
+              $app.Refresh()
+              if ($app.HasExited) { throw "Portable app exited during startup: $($app.ExitCode)" }
+              if ($app.MainWindowHandle -ne 0) { break }
+            }
+            if ($app.MainWindowHandle -eq 0) { throw "Portable app did not create a window" }
+          } finally {
+            if (-not $app.HasExited) { Stop-Process -Id $app.Id -Force }
+          }
+
+      - name: Upload desktop app
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: cyg-search-${{ matrix.name }}

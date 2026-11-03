@@ -9,7 +9,7 @@
     "test": "tsx --test src/*.test.ts",
     "tauri": "tauri",
     "bundle:mac": "tauri build --debug && codesign --force --deep --sign - src-tauri/target/debug/bundle/macos/畅易阁角色筛选.app && mkdir -p outputs && ditto src-tauri/target/debug/bundle/macos/畅易阁角色筛选.app outputs/畅易阁角色筛选.app",
-    "bundle:windows": "tauri build --bundles nsis"
+    "bundle:windows": "tauri build --no-bundle"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
