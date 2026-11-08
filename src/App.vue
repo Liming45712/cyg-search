@@ -19,6 +19,8 @@ import {
   Plus,
   Refresh,
   Search,
+  Star,
+  StarFilled,
   VideoPause,
 } from "@element-plus/icons-vue";
 import RangeInput from "./RangeInput.vue";
@@ -69,6 +71,8 @@ const roles = computed(() => goods.value.filter(item => (item.goods_type ?? 1) =
 const currencies = computed(() => goods.value.filter(item => item.goods_type === 2));
 const equipment = computed(() => goods.value.filter(item => item.goods_type === 3));
 const spirits = computed(() => goods.value.filter(item => item.goods_type === 5));
+const favoriteRoleMap = ref<Record<string, Role>>(loadFavoriteRoles());
+const favoriteRoles = computed(() => Object.values(favoriteRoleMap.value));
 const areas = shallowRef<Area[]>([]);
 const filters = reactive(defaults(localStorage.getItem("cyg-server") || "104"));
 const busy = ref(false);
@@ -201,6 +205,59 @@ const minimumNames = computed(() => [
 const extraAttributes = computed(() =>
   attributes.value.filter((k) => !minimumNames.value.includes(k)),
 );
+
+function loadFavoriteRoles(): Record<string, Role> {
+  try {
+    const value = JSON.parse(localStorage.getItem("cyg-favorite-roles") || "{}");
+    if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+    return Object.fromEntries(
+      Object.entries(value).filter((entry): entry is [string, Role] => {
+        const [code, role] = entry;
+        return typeof code === "string" && !!role && typeof role === "object" && (role as Role).code === code;
+      }),
+    );
+  } catch {
+    return {};
+  }
+}
+function saveFavoriteRoles(value: Record<string, Role>) {
+  try {
+    localStorage.setItem("cyg-favorite-roles", JSON.stringify(value));
+  } catch {
+    showNotice("收藏保存失败：本地存储空间不足，请先移除部分收藏。", "warning");
+  }
+}
+function isFavorite(code: string) {
+  return !!favoriteRoleMap.value[code];
+}
+function toggleFavorite(role: Role) {
+  const next = { ...favoriteRoleMap.value };
+  if (next[role.code]) delete next[role.code];
+  else next[role.code] = role;
+  favoriteRoleMap.value = next;
+  saveFavoriteRoles(next);
+}
+function clearFavorites() {
+  favoriteRoleMap.value = {};
+  saveFavoriteRoles({});
+}
+function syncFavoriteRoles(value: Role[]) {
+  let changed = false;
+  const next = { ...favoriteRoleMap.value };
+  for (const role of value) {
+    if (next[role.code]) {
+      next[role.code] = role;
+      changed = true;
+    }
+  }
+  if (changed) {
+    favoriteRoleMap.value = next;
+    saveFavoriteRoles(next);
+  }
+}
+function serverName(serverId: string) {
+  return options.value.find((item) => item.value === serverId)?.name || serverId;
+}
 const sortValue = computed({
   get: () => `${filters.sort}:${filters.desc ? "desc" : "asc"}`,
   set: (value: string) => {
@@ -322,6 +379,7 @@ async function refreshSnapshot() {
   try {
     const value = await invoke<Snapshot>("snapshot");
     goods.value = value.roles;
+    syncFavoriteRoles(value.roles.filter((item) => (item.goods_type ?? 1) === 1));
     if (value.areas.length) {
       areas.value = value.areas;
       if (areaSource.value !== "官网区服") areaSource.value = "本地区服缓存";
@@ -847,12 +905,19 @@ onBeforeUnmount(() => {
                 >
               </template>
             </el-table-column>
-            <el-table-column width="54" fixed="right">
-              <template #default="{ row }: { row: Role }"
+            <el-table-column width="132" fixed="right">
+              <template #default="{ row }: { row: Role }">
+                <el-button
+                  link
+                  type="primary"
+                  :icon="isFavorite(row.code) ? StarFilled : Star"
+                  :aria-label="isFavorite(row.code) ? `取消收藏${row.name}` : `收藏${row.name}`"
+                  @click.stop="toggleFavorite(row)"
+                  >{{ isFavorite(row.code) ? "已收藏" : "收藏" }}</el-button
                 ><el-button link type="primary" @click.stop="selectRole(row)"
                   >详情</el-button
-                ></template
-              >
+                >
+              </template>
             </el-table-column>
             <template #empty>
               <el-empty
@@ -922,6 +987,13 @@ onBeforeUnmount(() => {
                       @click.stop
                       @change="toggleCompare(row.code)"
                       >对比</el-checkbox
+                    >
+                    <el-button
+                      link
+                      type="primary"
+                      :icon="isFavorite(row.code) ? StarFilled : Star"
+                      @click.stop="toggleFavorite(row)"
+                      >{{ isFavorite(row.code) ? "已收藏" : "收藏" }}</el-button
                     >
                     <el-button link type="primary" @click.stop="selectRole(row)"
                       >详情</el-button
@@ -1047,6 +1119,88 @@ onBeforeUnmount(() => {
         </div>
       </section>
     </main>
+      </el-tab-pane>
+      <el-tab-pane label="本地收藏" name="favorites">
+        <section class="favorites-workspace" aria-label="本地收藏角色">
+          <div class="favorites-heading">
+            <div>
+              <h2>本地收藏</h2>
+              <p>收藏保存在本机，即使角色暂时下架也会保留。</p>
+            </div>
+            <el-button
+              v-if="favoriteRoles.length"
+              text
+              type="danger"
+              @click="clearFavorites"
+              >清空收藏</el-button
+            >
+          </div>
+          <div v-if="favoriteRoles.length" class="favorites-table-wrap">
+            <el-table
+              :data="favoriteRoles"
+              row-key="code"
+              height="100%"
+              stripe
+              highlight-current-row
+              :current-row-key="selectedCode ?? undefined"
+              class="role-table favorites-table"
+              @row-click="selectRole"
+            >
+              <el-table-column label="角色 / 职业" min-width="190" fixed="left">
+                <template #default="{ row }: { row: Role }">
+                  <el-button
+                    link
+                    class="role-name"
+                    :title="row.name"
+                    @click.stop="selectRole(row)"
+                    >{{ row.name || "未命名角色" }}</el-button
+                  >
+                  <div class="table-role-meta">
+                    <span>{{ row.job || "职业未知" }}</span>
+                    <el-tag
+                      :type="row.status === 1 ? 'warning' : 'info'"
+                      size="small"
+                      effect="plain"
+                      >{{
+                        row.status === 1
+                          ? "公示中"
+                          : row.status === 2
+                            ? "在售"
+                            : "状态未知"
+                      }}</el-tag
+                    >
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column label="区服" min-width="150">
+                <template #default="{ row }: { row: Role }">{{ serverName(row.server_id) }}</template>
+              </el-table-column>
+              <el-table-column label="价格（元）" min-width="105" align="center">
+                <template #default="{ row }: { row: Role }"><span class="price">{{ fmt(row.price) }}</span></template>
+              </el-table-column>
+              <el-table-column
+                v-for="key in tableFields"
+                :key="key"
+                :label="attrLabels[key] || key"
+                :min-width="key === '等级' ? 70 : 100"
+                align="center"
+              >
+                <template #default="{ row }: { row: Role }">
+                  <span :class="{ missing: numeric(row, key) === null }">{{ fmt(numeric(row, key)) }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column width="132" fixed="right">
+                <template #default="{ row }: { row: Role }">
+                  <el-button link type="primary" @click.stop="toggleFavorite(row)">取消收藏</el-button>
+                  <el-button link type="primary" @click.stop="selectRole(row)">详情</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+          <el-empty v-else description="还没有收藏角色">
+            <p class="empty-hint">在「角色筛选」中点击角色旁的「收藏」，即可在这里查看。</p>
+          </el-empty>
+        </section>
       </el-tab-pane>
       <el-tab-pane label="星灵选购" name="market">
         <SpiritMarket :items="spirits" :server="filters.server" :busy="busy" @simulate="simulateSpirit" @error="showNotice" />

@@ -17,4 +17,4 @@ Tauri 2 + Vue 3 + Element Plus + TypeScript + Rust + SQLite。用户明确要求
 
 ## Capabilities and Constraints
 首版先支持单个区服，默认侠客岛。拉取可取消、缓存可续抓；详情抓取失败保留旧值；未完整获取列表不删除旧数据。
-服务端属性筛选口径未经验证，首版只按区服获取列表。收藏、通知、价格历史、Windows 打包不在首版范围。
+服务端属性筛选口径未经验证，首版只按区服获取列表。通知、价格历史、Windows 打包不在首版范围；角色收藏保存在本机。
